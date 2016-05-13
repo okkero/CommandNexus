@@ -1,11 +1,11 @@
 package okkero.util;
 
 /**
- * @param <ST> the sender type
- * @param <T>  the type of command
+ * @param <S> the sender type
+ * @param <T> the type of command
  */
-public interface CommandHandler<ST, T extends Command> {
+public interface CommandHandler<S, T extends Command> {
 
-    void onCommand(ST sender, T command);
+    void onCommand(S sender, T command);
 
 }

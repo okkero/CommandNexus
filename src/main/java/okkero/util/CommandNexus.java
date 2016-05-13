@@ -10,21 +10,21 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * @param <ST> the sender type
+ * @param <S> the sender type
  */
-public class CommandNexus<ST> {
+public class CommandNexus<S> {
 
     private final Map<String, Class<? extends Command>> nameToClass = new HashMap<>();
-    private final Map<Class<? extends Command>, CommandHandler<ST, ?>> classToHandler = new HashMap<>();
+    private final Map<Class<? extends Command>, CommandHandler<S, ?>> classToHandler = new HashMap<>();
 
     private final Gson gson;
-    private final BiConsumer<ST, String> sendDelegate;
+    private final BiConsumer<S, String> sendDelegate;
 
-    public CommandNexus(BiConsumer<ST, String> sendDelegate) {
+    public CommandNexus(BiConsumer<S, String> sendDelegate) {
         this(new Gson(), sendDelegate);
     }
 
-    public CommandNexus(Gson gson, BiConsumer<ST, String> sendDelegate) {
+    public CommandNexus(Gson gson, BiConsumer<S, String> sendDelegate) {
         this.gson = gson;
         this.sendDelegate = sendDelegate;
     }
@@ -37,7 +37,7 @@ public class CommandNexus<ST> {
      * @param handler      the handler responsible for handling the command
      * @param <T>          the type of command to handle
      */
-    public <T extends Command> void handleCommand(String commandName, Class<T> commandClass, CommandHandler<ST, T> handler) {
+    public <T extends Command> void handleCommand(String commandName, Class<T> commandClass, CommandHandler<S, T> handler) {
         //The following ensures that command names and command classes are appropriately associated
         //with handlers capable of handling commands of that type.
         nameToClass.put(commandName, commandClass);
@@ -50,7 +50,7 @@ public class CommandNexus<ST> {
      * @param sender the sender of the command
      * @param json   the command that was sent, in JSON format
      */
-    public void onCommand(ST sender, String json) {
+    public void onCommand(S sender, String json) {
         Command command = parseCommand(json);
         CommandHandler handler = getCommandHandler(command.getClass());
 
@@ -89,7 +89,7 @@ public class CommandNexus<ST> {
      * @param commandName the name of the command to be handled
      * @return the CommandHandler object responsible for handling commands with the name
      */
-    public CommandHandler<ST, ?> getCommandHandler(String commandName) {
+    public CommandHandler<S, ?> getCommandHandler(String commandName) {
         Class<? extends Command> commandClass = getCommandType(commandName);
         return getCommandHandler(commandClass);
     }
@@ -101,9 +101,9 @@ public class CommandNexus<ST> {
      * @param <T>          the type of command to be handled
      * @return the CommandHandler object responsible for handling commands of the type
      */
-    public <T extends Command> CommandHandler<ST, T> getCommandHandler(Class<T> commandClass) {
+    public <T extends Command> CommandHandler<S, T> getCommandHandler(Class<T> commandClass) {
         //The command handler returned is guaranteed to be of the correct type (see #handleCommand)
-        return (CommandHandler<ST, T>) classToHandler.get(commandClass);
+        return (CommandHandler<S, T>) classToHandler.get(commandClass);
     }
 
     /**
@@ -113,7 +113,7 @@ public class CommandNexus<ST> {
      * @param command   the command to send
      * @throws IOException
      */
-    public void sendCommand(ST recipient, Command command) throws IOException {
+    public void sendCommand(S recipient, Command command) throws IOException {
         sendDelegate.accept(recipient, convertToJSON(command));
     }
 
