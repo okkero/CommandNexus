@@ -32,7 +32,7 @@ public class CommandNexus<S> {
     /**
      * Register a command handler to the nexus, for handling a specific type of command.
      *
-     * @param commandName  the commandName of the command to handle
+     * @param commandName  the name of the command to handle
      * @param commandClass the class of the command to handle
      * @param handler      the handler responsible for handling the command
      * @param <T>          the type of command to handle
